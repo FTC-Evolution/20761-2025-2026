@@ -8,15 +8,18 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Subsystems.DrivetrainFO;
-import org.firstinspires.ftc.teamcode.Subsystems.Gobeur;
+import org.firstinspires.ftc.teamcode.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
 
-@TeleOp(name = "Teleop")   //Mode
+@TeleOp(name = "FieldOriented TeleOp")   //Mode
 
 public class TeleopMode extends LinearOpMode {  // Basic code here
 
     private DrivetrainFO drivetrain;
     private IMU imu;
-    private Gobeur gobeur;
+    private Intake intake;
+    private Shooter shooter;
+
 
     @Override
     public void runOpMode() {   //run while init
@@ -27,8 +30,12 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
         );
         imu.initialize(parameters);
 
-        DcMotor gobeurMotor = hardwareMap.dcMotor.get("gobeur");
-        gobeur = new Gobeur(gobeurMotor);
+        DcMotor intakeMotor = hardwareMap.dcMotor.get("intake");
+        intake = new Intake(intakeMotor);
+        DcMotor shooterMotor1 = hardwareMap.dcMotor.get("shooter1");
+        DcMotor shooterMotor2 = hardwareMap.dcMotor.get("shooter2");
+        shooterMotor2.setDirection(DcMotor.Direction.REVERSE);
+        shooter = new Shooter(shooterMotor1, shooterMotor2);
 
        drivetrain = new DrivetrainFO(
                hardwareMap.dcMotor.get("fl"),
@@ -60,11 +67,6 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
                 double rotx = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
                 double roty = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
                 rotx = rotx * 1.1;
-                double denominator = Math.max(Math.abs(roty) + Math.abs(rotx) + Math.abs(r), 1);
-                double frontLeftPower = (roty + rotx + r) / denominator;
-                double backLeftPower = (roty - rotx + r) / denominator;
-                double frontRightPower = (roty - rotx - r) / denominator;
-                double backRightPower = (roty + rotx - r) / denominator;
 
 
             if (gamepad1.options) {
@@ -77,10 +79,19 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
                 drivetrain.setState(false);
             }
 
-            if (gamepad1.right_bumper) {
-                gobeur.setSpeed(1);
+            if (gamepad2.right_bumper) {
+                intake.setSpeed(1);
+            } else {
+                intake.setSpeed(0);
             }
 
+            if (gamepad2.left_bumper) {
+                shooter.setSpeed(1);
+            } else {
+                shooter.setSpeed(0);
+            }
+
+            // if (gamepad2.left_bumper)
             drivetrain.mecanumDrive(rotx,roty,r);
             telemetry.update();
             }
