@@ -44,7 +44,7 @@ public class DrivetrainFO {
         }
     }
 
-    public void mecanumDrive(double rotx, double roty, double r){    //Fonction for an easy tank drive(taken from FRC )
+    public void mecanumDrive(double rotx, double roty, double r) {    //Fonction for an easy tank drive(taken from FRC )
        if(slowMode) {
            frontLeft.setPower(roty/2 + rotx/2 + r/2);
            frontRight.setPower(roty/2 - rotx/2 - r/2);
