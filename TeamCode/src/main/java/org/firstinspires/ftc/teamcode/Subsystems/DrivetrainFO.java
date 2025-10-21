@@ -51,10 +51,10 @@ public class DrivetrainFO {
            rearLeft.setPower(roty/2 - rotx/2 + r/2);
            rearRight.setPower(roty/2 + rotx/2 -r/2);
        } else {
-           frontLeft.setPower(rotx + roty + r);
-           frontRight.setPower(rotx - roty - r);
-           rearLeft.setPower(rotx - roty + r);
-           rearRight.setPower(rotx + roty - r);
+           frontLeft.setPower(roty + rotx + r);
+           frontRight.setPower(roty - rotx - r);
+           rearLeft.setPower(roty - rotx + r);
+           rearRight.setPower(roty + rotx - r);
        }
 
     }
