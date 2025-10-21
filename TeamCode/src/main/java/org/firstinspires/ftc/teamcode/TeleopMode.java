@@ -25,12 +25,13 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
     public void runOpMode() {   //run while init
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.LogoFacingDirection.UP ,
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)
         );
         imu.initialize(parameters);
 
         DcMotor intakeMotor = hardwareMap.dcMotor.get("intake");
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
         intake = new Intake(intakeMotor);
         DcMotor shooterMotor1 = hardwareMap.dcMotor.get("shooter1");
         DcMotor shooterMotor2 = hardwareMap.dcMotor.get("shooter2");
