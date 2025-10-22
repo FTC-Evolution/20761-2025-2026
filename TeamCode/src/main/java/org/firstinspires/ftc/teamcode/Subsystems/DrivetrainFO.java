@@ -46,15 +46,25 @@ public class DrivetrainFO {
 
     public void mecanumDrive(double rotx, double roty, double r) {    //Fonction for an easy tank drive(taken from FRC )
        if(slowMode) {
-           frontLeft.setPower(roty/2 + rotx/2 + r/2);
-           frontRight.setPower(roty/2 - rotx/2 - r/2);
-           rearLeft.setPower(roty/2 - rotx/2 + r/2);
-           rearRight.setPower(roty/2 + rotx/2 -r/2);
+           double denominator = Math.max(Math.abs(roty) + Math.abs(rotx) + Math.abs(r), 1);
+           double frontLeftPower = (roty + rotx + r) / denominator;
+           double backLeftPower = (roty - rotx + r) / denominator;
+           double frontRightPower = (roty - rotx - r) / denominator;
+           double backRightPower = (roty + rotx - r) / denominator;
+           frontLeft.setPower(frontLeftPower/2);
+           frontRight.setPower(frontRightPower/2);
+           rearLeft.setPower(backLeftPower/2);
+           rearRight.setPower(backRightPower/2);
        } else {
-           frontLeft.setPower(roty + rotx + r);
-           frontRight.setPower(roty - rotx - r);
-           rearLeft.setPower(roty - rotx + r);
-           rearRight.setPower(roty + rotx - r);
+           double denominator = Math.max(Math.abs(roty) + Math.abs(rotx) + Math.abs(r), 1);
+           double frontLeftPower = (roty + rotx + r) / denominator;
+           double backLeftPower = (roty - rotx + r) / denominator;
+           double frontRightPower = (roty - rotx - r) / denominator;
+           double backRightPower = (roty + rotx - r) / denominator;
+           frontLeft.setPower(frontLeftPower);
+           frontRight.setPower(frontRightPower);
+           rearLeft.setPower(backLeftPower);
+           rearRight.setPower(backRightPower);
        }
 
     }

@@ -67,7 +67,7 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
                 double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
                 double rotx = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
                 double roty = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-                    rotx = rotx * 1.1;
+                rotx = rotx * 1.1;
 
 
              if (gamepad1.options) {
