@@ -24,7 +24,7 @@ public class DrivetrainFO {
         this.rearRight = rearRight;
         this.imu = imu;
 
-        frontRight.setDirection(DcMotorSimple.Direction.FORWARD);   // setting the motor direction
+        frontRight.setDirection(DcMotorSimple.Direction.FORWARD);   // setting the moteur direction
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         rearRight.setDirection(DcMotorSimple.Direction.FORWARD);
         rearLeft.setDirection(DcMotorSimple.Direction.REVERSE);

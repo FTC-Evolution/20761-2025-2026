@@ -25,8 +25,8 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
     public void runOpMode() {   //run while init
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP ,
-                RevHubOrientationOnRobot.UsbFacingDirection.LEFT)
+                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)
         );
         imu.initialize(parameters);
 
@@ -70,7 +70,7 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
                     rotx = rotx * 1.1;
 
 
-            if (gamepad1.options) {
+             if (gamepad1.options) {
                     imu.resetYaw();
             }
 
