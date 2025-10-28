@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Subsystems.DrivetrainFO;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.Subsystems.Climber;
 
 @TeleOp(name = "FieldOriented TeleOp")   //Mode
 
@@ -19,6 +20,7 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
     private IMU imu;
     private Intake intake;
     private Shooter shooter;
+    private Climber climber;
 
 
     @Override
@@ -37,6 +39,8 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
         DcMotor shooterMotor2 = hardwareMap.dcMotor.get("shooter2");
         shooterMotor2.setDirection(DcMotor.Direction.REVERSE);
         shooter = new Shooter(shooterMotor1, shooterMotor2);
+        DcMotor climberMotor = hardwareMap.dcMotor.get("climber");
+        climber = new Climber(climberMotor);
 
        drivetrain = new DrivetrainFO(
                hardwareMap.dcMotor.get("fl"),
@@ -62,13 +66,13 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
 
             while (opModeIsActive()) {
                 double y = -this.gamepad1.left_stick_y;
-                double x = this.gamepad1.left_stick_x;
+                double x = -this.gamepad1.left_stick_x;
                 double r = this.gamepad1.right_stick_x;
                 double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
                 double rotx = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
                 double roty = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
                 rotx = rotx * 1.1;
-                
+
 
              if (gamepad1.options) {
                     imu.resetYaw();
