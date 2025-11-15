@@ -3,14 +3,17 @@ package org.firstinspires.ftc.teamcode;  //Folder
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.Subsystems.ServoSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.DrivetrainFO;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Subsystems.Climber;
+
 
 @TeleOp(name = "FieldOriented TeleOp")   //Mode
 
@@ -21,6 +24,7 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
     private Intake intake;
     private Shooter shooter;
     private Climber climber;
+    private ServoSubsystem servo;
 
 
     @Override
@@ -41,6 +45,8 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
         shooter = new Shooter(shooterMotor1, shooterMotor2);
         DcMotor climberMotor = hardwareMap.dcMotor.get("climber");
         climber = new Climber(climberMotor);
+        CRServo servoMotor = hardwareMap.crservo.get("servo");
+        servo = new ServoSubsystem(servoMotor);
 
        drivetrain = new DrivetrainFO(
                hardwareMap.dcMotor.get("fl"),
@@ -96,10 +102,15 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
                 shooter.setSpeed(0);
             }
 
-            // if (gamepad2.left_bumper)
+            if (gamepad2.a) {
+                servo.setSpeed(1);
+            } else {
+                servo.setSpeed(0);
+            }
             drivetrain.mecanumDrive(rotx,roty,r);
             telemetry.update();
             }
+
         }
     }
 }
