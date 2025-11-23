@@ -103,7 +103,7 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
             }
 
             if (gamepad2.a) {
-                servo.setSpeed(1);
+                servo.setSpeed(-1);
             } else {
                 servo.setSpeed(0);
             }
