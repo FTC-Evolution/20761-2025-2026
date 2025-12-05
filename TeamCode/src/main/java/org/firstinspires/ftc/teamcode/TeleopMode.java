@@ -31,8 +31,8 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
     public void runOpMode() {   //run while init
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)
+                RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
+                RevHubOrientationOnRobot.UsbFacingDirection.RIGHT)
         );
         imu.initialize(parameters);
 
@@ -71,8 +71,8 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
         if(opModeIsActive()) {
 
             while (opModeIsActive()) {
-                double y = -this.gamepad1.left_stick_y;
-                double x = -this.gamepad1.left_stick_x;
+                double y = this.gamepad1.left_stick_y;
+                double x = this.gamepad1.left_stick_x;
                 double r = this.gamepad1.right_stick_x;
                 double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
                 double rotx = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
@@ -106,6 +106,17 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
                 servo.setSpeed(-1);
             } else {
                 servo.setSpeed(0);
+            }
+
+            if (gamepad2.y) {
+                climber.setSpeed(1);
+            } else {
+                climber.setSpeed(0);
+            }
+            if (gamepad2.b) {
+                climber.setSpeed(-1);
+            } else {
+                climber.setSpeed(0);
             }
             drivetrain.mecanumDrive(rotx,roty,r);
             telemetry.update();
