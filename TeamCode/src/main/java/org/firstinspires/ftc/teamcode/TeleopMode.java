@@ -110,14 +110,12 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
 
             if (gamepad2.y) {
                 climber.setSpeed(1);
-            } else {
-                climber.setSpeed(0);
-            }
-            if (gamepad2.b) {
+            } else if (gamepad2.b) {
                 climber.setSpeed(-1);
             } else {
                 climber.setSpeed(0);
             }
+            
             drivetrain.mecanumDrive(rotx,roty,r);
             telemetry.update();
             }
