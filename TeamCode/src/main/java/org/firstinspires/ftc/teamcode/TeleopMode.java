@@ -115,7 +115,7 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
             } else {
                 climber.setSpeed(0);
             }
-            
+
             drivetrain.mecanumDrive(rotx,roty,r);
             telemetry.update();
             }
