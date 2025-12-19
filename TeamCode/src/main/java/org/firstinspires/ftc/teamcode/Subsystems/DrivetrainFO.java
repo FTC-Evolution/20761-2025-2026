@@ -24,10 +24,10 @@ public class DrivetrainFO {
         this.rearRight = rearRight;
         this.imu = imu;
 
-        frontRight.setDirection(DcMotorSimple.Direction.FORWARD);   // setting the moteur direction
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        rearRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        rearLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);   // setting the moteur direction
+        frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        rearRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        rearLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 
     }
     public boolean slowMode = false;

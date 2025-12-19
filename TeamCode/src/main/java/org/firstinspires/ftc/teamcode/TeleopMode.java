@@ -41,7 +41,7 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
         intake = new Intake(intakeMotor);
         DcMotor shooterMotor1 = hardwareMap.dcMotor.get("shooter1");
         DcMotor shooterMotor2 = hardwareMap.dcMotor.get("shooter2");
-        shooterMotor2.setDirection(DcMotor.Direction.REVERSE);
+        shooterMotor1.setDirection(DcMotor.Direction.REVERSE);
         shooter = new Shooter(shooterMotor1, shooterMotor2);
         DcMotor climberMotor = hardwareMap.dcMotor.get("climber");
         climber = new Climber(climberMotor);
@@ -71,7 +71,7 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
         if(opModeIsActive()) {
 
             while (opModeIsActive()) {
-                double y = this.gamepad1.left_stick_y;
+                double y = -this.gamepad1.left_stick_y;
                 double x = this.gamepad1.left_stick_x;
                 double r = this.gamepad1.right_stick_x;
                 double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
@@ -90,13 +90,13 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
                 drivetrain.setState(false);
             }
 
-            if (gamepad2.right_bumper) {
+            if (gamepad2.right_trigger > 0.1) {
                 intake.setSpeed(1);
             } else {
                 intake.setSpeed(0);
             }
 
-            if (gamepad2.left_bumper) {
+            if (gamepad2.right_bumper) {
                 shooter.setSpeed(1);
             } else {
                 shooter.setSpeed(0);
