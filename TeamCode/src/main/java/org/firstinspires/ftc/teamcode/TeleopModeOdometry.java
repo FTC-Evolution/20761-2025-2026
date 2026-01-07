@@ -37,9 +37,9 @@ public class TeleopModeOdometry extends LinearOpMode {  // Basic code here
     DcMotor backLeft;
     DcMotor backRight;
     Pose2D targetPose = new Pose2D(DistanceUnit.MM, 0, 0, AngleUnit.DEGREES, 0);
-    double xStartingPosition = 0.0;
-    double yStartingPosition = 1219.2;
-    double headingStartingPosition = 90.0;
+    double xStartingPosition = -1828.8;
+    double yStartingPosition = 0.0;
+    double headingStartingPosition = 0.0;
     @Override
     public void runOpMode() {   //run while init
         imu = hardwareMap.get(IMU.class, "imu");
