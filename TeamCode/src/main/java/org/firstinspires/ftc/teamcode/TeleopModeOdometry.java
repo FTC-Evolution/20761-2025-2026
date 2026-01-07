@@ -37,7 +37,9 @@ public class TeleopModeOdometry extends LinearOpMode {  // Basic code here
     DcMotor backLeft;
     DcMotor backRight;
     Pose2D targetPose = new Pose2D(DistanceUnit.MM, 0, 0, AngleUnit.DEGREES, 0);
-
+    double xStartingPosition = 0.0;
+    double yStartingPosition = 1219.2;
+    double headingStartingPosition = 90.0;
     @Override
     public void runOpMode() {   //run while init
         imu = hardwareMap.get(IMU.class, "imu");
@@ -68,7 +70,7 @@ public class TeleopModeOdometry extends LinearOpMode {  // Basic code here
         odo = this.hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         odo.setOffsets(0, 0, DistanceUnit.MM);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
         odo.resetPosAndIMU();
         nav.setDriveType(DriveToPoint.DriveType.MECANUM);
 
@@ -84,7 +86,7 @@ public class TeleopModeOdometry extends LinearOpMode {  // Basic code here
 
         telemetry.addData("Status", "Initialized");  // print in console
         telemetry.update();
-
+        odo.setPosition(new Pose2D(DistanceUnit.MM, xStartingPosition, yStartingPosition, AngleUnit.DEGREES, headingStartingPosition));
         waitForStart();  // After run when start
 
         telemetry.addData("Status", "Running");   // print in console
@@ -138,6 +140,9 @@ public class TeleopModeOdometry extends LinearOpMode {  // Basic code here
                 climber.setSpeed(-1);
             } else {
                 climber.setSpeed(0);
+            }
+            if (gamepad1.a) {
+                driveToTarget(targetPose, 0.5);
             }
 
             drivetrain.mecanumDrive(rotx,roty,r);
