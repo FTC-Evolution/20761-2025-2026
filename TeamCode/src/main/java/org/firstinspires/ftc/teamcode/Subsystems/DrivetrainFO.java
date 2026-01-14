@@ -6,11 +6,10 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 
 public class DrivetrainFO {
-    private DcMotor frontRight;     // Creating all object
-    private DcMotor frontLeft;
-    private DcMotor rearRight;
-    private DcMotor rearLeft;
-    private IMU imu;
+    private final DcMotor frontRight;     // Creating all object
+    private final DcMotor frontLeft;
+    private final DcMotor rearRight;
+    private final DcMotor rearLeft;
     private  boolean _state;
     double cm = (569.6)/(9.6 * 3.14);
     int cm_entier = (int)cm;
@@ -22,7 +21,6 @@ public class DrivetrainFO {
         this.frontRight = frontRight;
         this.rearLeft = rearLeft;
         this.rearRight = rearRight;
-        this.imu = imu;
 
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);   // setting the moteur direction
         frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);

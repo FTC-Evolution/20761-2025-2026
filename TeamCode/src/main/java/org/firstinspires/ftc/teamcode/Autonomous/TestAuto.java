@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
 
 import java.util.Locale;
 
-@Autonomous(name = "TestAuto", group = "")
+@Autonomous(name = "TestAuto")
 
 public class TestAuto extends LinearOpMode {
     DrivetrainFO drivetrain;
@@ -39,13 +39,25 @@ public class TestAuto extends LinearOpMode {
     double xStartingPosition = -1828.8;
     double yStartingPosition = 0.0;
     double headingStartingPosition = 0.0;
-    @Override
+    public void driveToTarget(Pose2D targetPose, double speed) {
+        odo.update();
+        this.targetPose = targetPose;
+        nav.driveTo(odo.getPosition(), targetPose, speed, 0);
 
+        frontLeft.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.LEFT_FRONT));
+        frontRight.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.RIGHT_FRONT));
+        backLeft.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.LEFT_BACK));
+        backRight.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.RIGHT_BACK));
+
+        String data2 = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", targetPose.getX(DistanceUnit.INCH), targetPose.getY(DistanceUnit.INCH), targetPose.getHeading(AngleUnit.RADIANS));
+        telemetry.addData("TARGET Position", data2);
+    }
+    @Override
     public void runOpMode() {
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
-                RevHubOrientationOnRobot.UsbFacingDirection.RIGHT)
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD)
         );
         imu.initialize(parameters);
 
@@ -98,20 +110,7 @@ public class TestAuto extends LinearOpMode {
         waitForStart();
         // Autonomous code here:
         driveToTarget(targetPose, 0.5);
-
     }
-    public void driveToTarget(Pose2D targetPose, double speed) {
-        odo.update();
-        this.targetPose = targetPose;
-        nav.driveTo(odo.getPosition(), targetPose, speed, 0);
 
-        frontLeft.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.LEFT_FRONT));
-        frontRight.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.RIGHT_FRONT));
-        backLeft.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.LEFT_BACK));
-        backRight.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.RIGHT_BACK));
-
-        String data2 = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", targetPose.getX(DistanceUnit.INCH), targetPose.getY(DistanceUnit.INCH), targetPose.getHeading(AngleUnit.RADIANS));
-        telemetry.addData("TARGET Position", data2);
-    }
 }
 

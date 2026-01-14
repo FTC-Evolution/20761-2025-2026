@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Teleop;  //Folder
+package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -15,58 +15,48 @@ import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Subsystems.Climber;
 
 
-@TeleOp(name = "FieldOriented TeleOp")   //Mode
+@TeleOp(name = "FieldOriented TeleOp")
 
-public class TeleopMode extends LinearOpMode {  // Basic code here
-
-    private DrivetrainFO drivetrain;
-    private IMU imu;
-    private Intake intake;
-    private Shooter shooter;
-    private Climber climber;
-    private ServoSubsystem servo;
-
+public class TeleopMode extends LinearOpMode {
 
     @Override
-    public void runOpMode() {   //run while init
-        imu = hardwareMap.get(IMU.class, "imu");
+    public void runOpMode() {
+        IMU imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
-                RevHubOrientationOnRobot.UsbFacingDirection.RIGHT)
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD)
         );
         imu.initialize(parameters);
 
         DcMotor intakeMotor = hardwareMap.dcMotor.get("intake");
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-        intake = new Intake(intakeMotor);
+        Intake intake = new Intake(intakeMotor);
         DcMotor shooterMotor1 = hardwareMap.dcMotor.get("shooter1");
         DcMotor shooterMotor2 = hardwareMap.dcMotor.get("shooter2");
         shooterMotor1.setDirection(DcMotor.Direction.REVERSE);
-        shooter = new Shooter(shooterMotor1, shooterMotor2);
+        Shooter shooter = new Shooter(shooterMotor1, shooterMotor2);
         DcMotor climberMotor = hardwareMap.dcMotor.get("climber");
-        climber = new Climber(climberMotor);
+        Climber climber = new Climber(climberMotor);
         CRServo servoMotor = hardwareMap.crservo.get("servo");
-        servo = new ServoSubsystem(servoMotor);
+        ServoSubsystem servo = new ServoSubsystem(servoMotor);
 
-       drivetrain = new DrivetrainFO(
-               hardwareMap.dcMotor.get("fl"),
+        DrivetrainFO drivetrain = new DrivetrainFO(
+                hardwareMap.dcMotor.get("fl"),
                 hardwareMap.dcMotor.get("fr"),
                 hardwareMap.dcMotor.get("bl"),
-               hardwareMap.dcMotor.get("br"),
-               imu
-       );
+                hardwareMap.dcMotor.get("br"),
+                imu
+        );
 
 
 
-        telemetry.addData("Status", "Initialized");  // print in console
+        telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        waitForStart();  // After run when start
+        waitForStart();
 
-        telemetry.addData("Status", "Running");   // print in console
+        telemetry.addData("Status", "Running");
         telemetry.update();
-
-        int pos = 0;
 
         if(opModeIsActive()) {
 

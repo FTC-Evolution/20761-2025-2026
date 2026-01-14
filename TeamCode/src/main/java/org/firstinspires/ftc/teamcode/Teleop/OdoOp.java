@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Teleop;  //Folder
+package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -21,9 +21,9 @@ import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
 import java.util.Locale;
 
 
-@TeleOp(name = "FieldOriented TeleOp")   //Mode
+@TeleOp(name = "OdoOp")
 
-public class TeleopModeOdometry extends LinearOpMode {  // Basic code here
+public class OdoOp extends LinearOpMode {
 
     DrivetrainFO drivetrain;
     IMU imu;
@@ -42,37 +42,40 @@ public class TeleopModeOdometry extends LinearOpMode {  // Basic code here
     double yStartingPosition = 0.0;
     double headingStartingPosition = 0.0;
     @Override
-    public void runOpMode() {   //run while init
+    public void runOpMode() {
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
-                RevHubOrientationOnRobot.UsbFacingDirection.RIGHT)
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD)
         );
         imu.initialize(parameters);
+
         frontLeft = hardwareMap.dcMotor.get("fl");
         frontRight = hardwareMap.dcMotor.get("fr");
         backLeft = hardwareMap.dcMotor.get("bl");
         backRight = hardwareMap.dcMotor.get("br");
+
         DcMotor intakeMotor = hardwareMap.dcMotor.get("intake");
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
         intake = new Intake(intakeMotor);
+
         DcMotor shooterMotor1 = hardwareMap.dcMotor.get("shooter1");
         DcMotor shooterMotor2 = hardwareMap.dcMotor.get("shooter2");
         shooterMotor1.setDirection(DcMotor.Direction.REVERSE);
         shooter = new Shooter(shooterMotor1, shooterMotor2);
+
         DcMotor climberMotor = hardwareMap.dcMotor.get("climber");
         climber = new Climber(climberMotor);
+
         CRServo servoMotor = hardwareMap.crservo.get("servo");
         servo = new ServoSubsystem(servoMotor);
-        DriveToPoint nav;
-
-
-        nav = new DriveToPoint(this);
         odo = this.hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         odo.setOffsets(0, 0, DistanceUnit.MM);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
         odo.resetPosAndIMU();
+
+        nav = new DriveToPoint(this);
         nav.setDriveType(DriveToPoint.DriveType.MECANUM);
 
        drivetrain = new DrivetrainFO(
@@ -83,20 +86,15 @@ public class TeleopModeOdometry extends LinearOpMode {  // Basic code here
                imu
        );
 
-
-
-        telemetry.addData("Status", "Initialized");  // print in console
+        telemetry.addData("Status", "Initialized");
         telemetry.update();
         odo.setPosition(new Pose2D(DistanceUnit.MM, xStartingPosition, yStartingPosition, AngleUnit.DEGREES, headingStartingPosition));
-        waitForStart();  // After run when start
+        waitForStart();
 
-        telemetry.addData("Status", "Running");   // print in console
+        telemetry.addData("Status", "Running");
         telemetry.update();
 
-        int pos = 0;
-
         if(opModeIsActive()) {
-
             while (opModeIsActive()) {
                 double y = -this.gamepad1.left_stick_y;
                 double x = this.gamepad1.left_stick_x;
@@ -107,60 +105,59 @@ public class TeleopModeOdometry extends LinearOpMode {  // Basic code here
                 rotx = rotx * 1.1;
 
 
-             if (gamepad1.options) {
+                if (gamepad1.options) {
                     imu.resetYaw();
-            }
+                }
 
-            if (gamepad1.left_bumper) {
-                drivetrain.setState(true);
-            } else {
-                drivetrain.setState(false);
-            }
+                if (gamepad1.left_bumper) {
+                    drivetrain.setState(true);
+                } else {
+                    drivetrain.setState(false);
+                }
 
-            if (gamepad2.right_trigger > 0.1) {
-                intake.setSpeed(1);
-            } else {
-                intake.setSpeed(0);
-            }
+                if (gamepad2.right_trigger > 0.1) {
+                    intake.setSpeed(1);
+                } else {
+                    intake.setSpeed(0);
+                }
 
-            if (gamepad2.right_bumper) {
-                shooter.setSpeed(1);
-            } else {
-                shooter.setSpeed(0);
-            }
+                if (gamepad2.right_bumper) {
+                    shooter.setSpeed(1);
+                } else {
+                    shooter.setSpeed(0);
+                }
 
-            if (gamepad2.a) {
-                servo.setSpeed(-1);
-            } else {
-                servo.setSpeed(0);
-            }
+                if (gamepad2.a) {
+                    servo.setSpeed(-1);
+                } else {
+                    servo.setSpeed(0);
+                }
 
-            if (gamepad2.y) {
-                climber.setSpeed(1);
-            } else if (gamepad2.b) {
-                climber.setSpeed(-1);
-            } else {
-                climber.setSpeed(0);
-            }
-            if (gamepad1.a) {
-                driveToTarget(targetPose, 0.5);
-            }
+                if (gamepad2.y) {
+                    climber.setSpeed(1);
+                } else if (gamepad2.b) {
+                    climber.setSpeed(-1);
+                } else {
+                    climber.setSpeed(0);
+                }
+                if (gamepad1.a) {
+                    driveToTarget(targetPose, 0.5);
+                }
 
-            drivetrain.mecanumDrive(rotx,roty,r);
-            telemetry.update();
+                drivetrain.mecanumDrive(rotx,roty,r);
+                telemetry.update();
             }
-
         }
 
     }
-    public boolean isAtTarget(double posTolerance, double velTolerance, double angleTolerance) {
-        odo.update();
-        return Math.abs(odo.getPosX(DistanceUnit.MM) - targetPose.getX(DistanceUnit.MM)) < posTolerance &&
-                Math.abs(odo.getPosY(DistanceUnit.MM) - targetPose.getY(DistanceUnit.MM)) < posTolerance &&
-                Math.abs(odo.getPosition().getHeading(AngleUnit.RADIANS) - targetPose.getHeading(AngleUnit.RADIANS)) < angleTolerance &&
-                Math.abs(odo.getVelX(DistanceUnit.MM)) < velTolerance &&
-                Math.abs(odo.getVelY(DistanceUnit.MM)) < velTolerance;
-    }
+//    public boolean isAtTarget(double posTolerance, double velTolerance, double angleTolerance) {
+//        odo.update();
+//        return Math.abs(odo.getPosX(DistanceUnit.MM) - targetPose.getX(DistanceUnit.MM)) < posTolerance &&
+//                Math.abs(odo.getPosY(DistanceUnit.MM) - targetPose.getY(DistanceUnit.MM)) < posTolerance &&
+//                Math.abs(odo.getPosition().getHeading(AngleUnit.RADIANS) - targetPose.getHeading(AngleUnit.RADIANS)) < angleTolerance &&
+//                Math.abs(odo.getVelX(DistanceUnit.MM)) < velTolerance &&
+//                Math.abs(odo.getVelY(DistanceUnit.MM)) < velTolerance;
+//    }
 
     public void driveToTarget(Pose2D targetPose, double speed) {
         odo.update();
@@ -173,7 +170,5 @@ public class TeleopModeOdometry extends LinearOpMode {  // Basic code here
 
         String data2 = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", targetPose.getX(DistanceUnit.INCH), targetPose.getY(DistanceUnit.INCH), targetPose.getHeading(AngleUnit.RADIANS));
         telemetry.addData("TARGET Position", data2);
-
-
     }
 }
