@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -16,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Climber;
 
 
 @TeleOp(name = "FieldOriented TeleOp")
-
+@Disabled
 public class TeleopMode extends LinearOpMode {
 
     @Override
@@ -31,10 +33,16 @@ public class TeleopMode extends LinearOpMode {
         DcMotor intakeMotor = hardwareMap.dcMotor.get("intake");
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
         Intake intake = new Intake(intakeMotor);
-        DcMotor shooterMotor1 = hardwareMap.dcMotor.get("shooter1");
-        DcMotor shooterMotor2 = hardwareMap.dcMotor.get("shooter2");
+        DcMotorEx shooterMotor1 = hardwareMap.get(DcMotorEx.class, "shooter1");
+        shooterMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooterMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        DcMotorEx shooterMotor2 = hardwareMap.get(DcMotorEx.class, "shooter2");
+        shooterMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooterMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterMotor1.setDirection(DcMotor.Direction.REVERSE);
         Shooter shooter = new Shooter(shooterMotor1, shooterMotor2);
+
         DcMotor climberMotor = hardwareMap.dcMotor.get("climber");
         Climber climber = new Climber(climberMotor);
         CRServo servoMotor = hardwareMap.crservo.get("servo");

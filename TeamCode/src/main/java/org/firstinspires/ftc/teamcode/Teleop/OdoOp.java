@@ -6,7 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -59,9 +61,15 @@ public class OdoOp extends LinearOpMode {
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
         intake = new Intake(intakeMotor);
 
-        DcMotor shooterMotor1 = hardwareMap.dcMotor.get("shooter1");
-        DcMotor shooterMotor2 = hardwareMap.dcMotor.get("shooter2");
+        DcMotorEx shooterMotor1 = hardwareMap.get(DcMotorEx.class, "shooter1");
+        shooterMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooterMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        DcMotorEx shooterMotor2 = hardwareMap.get(DcMotorEx.class, "shooter2");
+        shooterMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooterMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterMotor1.setDirection(DcMotor.Direction.REVERSE);
+
         shooter = new Shooter(shooterMotor1, shooterMotor2);
 
         DcMotor climberMotor = hardwareMap.dcMotor.get("climber");
@@ -69,6 +77,7 @@ public class OdoOp extends LinearOpMode {
 
         CRServo servoMotor = hardwareMap.crservo.get("servo");
         servo = new ServoSubsystem(servoMotor);
+
         odo = this.hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         odo.setOffsets(0, 0, DistanceUnit.MM);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
@@ -77,6 +86,7 @@ public class OdoOp extends LinearOpMode {
 
         nav = new DriveToPoint(this);
         nav.setDriveType(DriveToPoint.DriveType.MECANUM);
+
 
        drivetrain = new DrivetrainFO(
                frontLeft,
@@ -104,6 +114,7 @@ public class OdoOp extends LinearOpMode {
                 double roty = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
                 rotx = rotx * 1.1;
 
+                telemetry.update();
 
                 if (gamepad1.options) {
                     imu.resetYaw();
@@ -115,31 +126,46 @@ public class OdoOp extends LinearOpMode {
                     drivetrain.setState(false);
                 }
 
-                if (gamepad2.right_trigger > 0.1) {
+                if (gamepad2.x) {
                     intake.setSpeed(1);
                 } else {
                     intake.setSpeed(0);
                 }
 
-                if (gamepad2.right_bumper) {
-                    shooter.setSpeed(1);
+                if (gamepad2.y) {
+                    intake.setSpeed(-1);
                 } else {
-                    shooter.setSpeed(0);
+                    intake.setSpeed(0);
                 }
 
+                if (gamepad2.right_bumper) {
+                    shooter.setVelocity(1250);
+                } else {
+                    shooter.setVelocity(0);
+                }
+                double m1 = shooterMotor1.getVelocity();
+                double m2 = shooterMotor2.getVelocity();
+                telemetry.addData("Shooter 1 speed: ", m1);
+                telemetry.addData("Shooter 2 speed: ", m2);
+                telemetry.update();
                 if (gamepad2.a) {
                     servo.setSpeed(-1);
                 } else {
                     servo.setSpeed(0);
                 }
-
-                if (gamepad2.y) {
-                    climber.setSpeed(1);
-                } else if (gamepad2.b) {
-                    climber.setSpeed(-1);
+                if (gamepad2.b) {
+                    servo.setSpeed(1);
                 } else {
-                    climber.setSpeed(0);
+                    servo.setSpeed(0);
                 }
+
+                //if (gamepad2.y) {
+                  //  climber.setSpeed(1);
+                //} else if (gamepad2.b) {
+                //    climber.setSpeed(-1);
+                //} else {
+                //    climber.setSpeed(0);
+                //}
                 if (gamepad1.a) {
                     driveToTarget(targetPose, 0.5);
                 }
@@ -171,4 +197,7 @@ public class OdoOp extends LinearOpMode {
         String data2 = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", targetPose.getX(DistanceUnit.INCH), targetPose.getY(DistanceUnit.INCH), targetPose.getHeading(AngleUnit.RADIANS));
         telemetry.addData("TARGET Position", data2);
     }
+
+
 }
+

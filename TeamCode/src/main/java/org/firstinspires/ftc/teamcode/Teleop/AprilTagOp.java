@@ -4,10 +4,12 @@ import android.util.Size;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -32,7 +34,7 @@ import java.util.Locale;
 
 
 @TeleOp(name = "AprilTagOp")
-
+@Disabled
 public class AprilTagOp extends LinearOpMode {
     private static final boolean USE_WEBCAM = true;
     private Position cameraPosition = new Position(DistanceUnit.INCH,
@@ -76,10 +78,14 @@ public class AprilTagOp extends LinearOpMode {
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
         intake = new Intake(intakeMotor);
 
-        DcMotor shooterMotor1 = hardwareMap.dcMotor.get("shooter1");
-        DcMotor shooterMotor2 = hardwareMap.dcMotor.get("shooter2");
+        DcMotorEx shooterMotor1 = hardwareMap.get(DcMotorEx.class, "shooter1");
+        shooterMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooterMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        DcMotorEx shooterMotor2 = hardwareMap.get(DcMotorEx.class, "shooter2");
+        shooterMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooterMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterMotor1.setDirection(DcMotor.Direction.REVERSE);
-        shooter = new Shooter(shooterMotor1, shooterMotor2);
 
         DcMotor climberMotor = hardwareMap.dcMotor.get("climber");
         climber = new Climber(climberMotor);
