@@ -128,11 +128,7 @@ public class OdoOp extends LinearOpMode {
 
                 if (gamepad2.x) {
                     intake.setSpeed(1);
-                } else {
-                    intake.setSpeed(0);
-                }
-
-                if (gamepad2.y) {
+                } else if (gamepad2.y) {
                     intake.setSpeed(-1);
                 } else {
                     intake.setSpeed(0);
@@ -148,24 +144,22 @@ public class OdoOp extends LinearOpMode {
                 telemetry.addData("Shooter 1 speed: ", m1);
                 telemetry.addData("Shooter 2 speed: ", m2);
                 telemetry.update();
+
                 if (gamepad2.a) {
                     servo.setSpeed(-1);
-                } else {
-                    servo.setSpeed(0);
-                }
-                if (gamepad2.b) {
+                } else if (gamepad2.b) {
                     servo.setSpeed(1);
                 } else {
                     servo.setSpeed(0);
                 }
-
                 //if (gamepad2.y) {
-                  //  climber.setSpeed(1);
+                //  climber.setSpeed(1);
                 //} else if (gamepad2.b) {
                 //    climber.setSpeed(-1);
                 //} else {
                 //    climber.setSpeed(0);
                 //}
+
                 if (gamepad1.a) {
                     driveToTarget(targetPose, 0.5);
                 }
