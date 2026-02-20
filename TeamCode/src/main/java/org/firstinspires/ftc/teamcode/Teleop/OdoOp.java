@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.DriveToPoint;
 import org.firstinspires.ftc.teamcode.Subsystems.Climber;
 import org.firstinspires.ftc.teamcode.Subsystems.DrivetrainFO;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.Subsystems.ServoSubsystem;
+import org.firstinspires.ftc.teamcode.Subsystems.IntakeThing;
 import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
 
 import java.util.Locale;
@@ -31,8 +31,8 @@ public class OdoOp extends LinearOpMode {
     IMU imu;
     Intake intake;
     Shooter shooter;
-    Climber climber;
-    ServoSubsystem servo;
+    //Climber climber;
+    IntakeThing intakeThing;
     GoBildaPinpointDriver odo;
     DriveToPoint nav;
     DcMotor frontLeft;
@@ -72,11 +72,11 @@ public class OdoOp extends LinearOpMode {
 
         shooter = new Shooter(shooterMotor1, shooterMotor2);
 
-        DcMotor climberMotor = hardwareMap.dcMotor.get("climber");
-        climber = new Climber(climberMotor);
+        //DcMotor climberMotor = hardwareMap.dcMotor.get("climber");
+        //climber = new Climber(climberMotor);
 
-        CRServo servoMotor = hardwareMap.crservo.get("servo");
-        servo = new ServoSubsystem(servoMotor);
+        DcMotor intakeThingMotor = hardwareMap.dcMotor.get("intakething");
+        intakeThing = new IntakeThing(intakeThingMotor);
 
         odo = this.hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         odo.setOffsets(0, 0, DistanceUnit.MM);
@@ -126,7 +126,7 @@ public class OdoOp extends LinearOpMode {
                     drivetrain.setState(false);
                 }
 
-                if (gamepad2.x) {
+                if (gamepad2.a) {
                     intake.setSpeed(1);
                 } else if (gamepad2.y) {
                     intake.setSpeed(-1);
@@ -145,12 +145,12 @@ public class OdoOp extends LinearOpMode {
                 telemetry.addData("Shooter 2 speed: ", m2);
                 telemetry.update();
 
-                if (gamepad2.a) {
-                    servo.setSpeed(-1);
-                } else if (gamepad2.b) {
-                    servo.setSpeed(1);
+                if (gamepad2.dpad_down) {
+                    intakeThing.setSpeed(-1);
+                } else if (gamepad2.dpad_up) {
+                    intakeThing.setSpeed(1);
                 } else {
-                    servo.setSpeed(0);
+                    intakeThing.setSpeed(0);
                 }
                 //if (gamepad2.y) {
                 //  climber.setSpeed(1);
