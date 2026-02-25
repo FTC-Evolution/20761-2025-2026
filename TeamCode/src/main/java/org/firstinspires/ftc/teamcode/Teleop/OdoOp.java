@@ -126,16 +126,18 @@ public class OdoOp extends LinearOpMode {
                     drivetrain.setState(false);
                 }
 
-                if (gamepad2.a) {
+                if (gamepad2.y) {
                     intake.setSpeed(1);
-                } else if (gamepad2.y) {
+                } else if (gamepad2.a) {
                     intake.setSpeed(-1);
                 } else {
                     intake.setSpeed(0);
                 }
 
-                if (gamepad2.right_bumper) {
+                if (gamepad2.right_trigger > 0.1) {
                     shooter.setVelocity(1250);
+                } else if (gamepad2.left_trigger > 0.1) {
+                    shooter.setVelocity(-1250);
                 } else {
                     shooter.setVelocity(0);
                 }
@@ -145,10 +147,14 @@ public class OdoOp extends LinearOpMode {
                 telemetry.addData("Shooter 2 speed: ", m2);
                 telemetry.update();
 
-                if (gamepad2.dpad_down) {
-                    intakeThing.setSpeed(-1);
-                } else if (gamepad2.dpad_up) {
-                    intakeThing.setSpeed(1);
+                if (gamepad2.dpad_up) {
+                    intakeThing.setSpeed(-0.75);
+                } else if (gamepad2.dpad_down) {
+                    intakeThing.setSpeed(0.85);
+                } else if (gamepad2.dpad_right) {
+                    intakeThing.setSpeed(-0.40);
+                } else if (gamepad2.dpad_left) {
+                    intakeThing.setSpeed(0.40);
                 } else {
                     intakeThing.setSpeed(0);
                 }
