@@ -87,8 +87,16 @@ public class OdoOp extends LinearOpMode {
         odo = this.hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         odo.setOffsets(0, 0, DistanceUnit.MM);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         odo.resetPosAndIMU();
+
+        // Wait for the Pinpoint IMU to finish calibrating (critical!)
+        // If you don't wait, the heading will be garbage and drive will go random directions
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
         nav = new DriveToPoint(this);
         nav.setDriveType(DriveToPoint.DriveType.MECANUM);
@@ -112,18 +120,30 @@ public class OdoOp extends LinearOpMode {
 
         if(opModeIsActive()) {
             while (opModeIsActive()) {
+                odo.update();
+
                 double y = -this.gamepad1.left_stick_y;
                 double x = this.gamepad1.left_stick_x;
                 double r = this.gamepad1.right_stick_x;
-                double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+                // Use the Pinpoint heading instead of the REV IMU so both
+                // manual drive and driveToTarget use the same heading source
+                double botHeading = odo.getPosition().getHeading(AngleUnit.RADIANS);
                 double rotx = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
                 double roty = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
                 rotx = rotx * 1.1;
 
-                telemetry.update();
+                // Show odo position for debugging
+                Pose2D currentPos = odo.getPosition();
+                String posData = String.format(Locale.US, "X: %.1f, Y: %.1f, H: %.1f°",
+                        currentPos.getX(DistanceUnit.MM),
+                        currentPos.getY(DistanceUnit.MM),
+                        currentPos.getHeading(AngleUnit.DEGREES));
+                telemetry.addData("Odo Position", posData);
+                telemetry.addData("Odo Status", odo.getDeviceStatus());
 
                 if (gamepad1.options) {
                     imu.resetYaw();
+                    odo.resetPosAndIMU();
                 }
 
                 if (gamepad1.left_bumper) {
@@ -183,9 +203,10 @@ public class OdoOp extends LinearOpMode {
 
                 if (gamepad1.a) {
                     driveToTarget(targetPose, 0.5);
+                } else {
+                    drivetrain.mecanumDrive(rotx,roty,r);
                 }
 
-                drivetrain.mecanumDrive(rotx,roty,r);
                 telemetry.update();
             }
         }

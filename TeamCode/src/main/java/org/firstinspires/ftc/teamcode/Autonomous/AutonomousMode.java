@@ -23,8 +23,8 @@ import org.firstinspires.ftc.teamcode.Subsystems.Led;
 import java.util.Locale;
 
 
-@Autonomous(name = "Autonomous")
-@Disabled
+@Autonomous(name = "Autonomous Mode")
+
 
 public class AutonomousMode extends LinearOpMode {
 
@@ -107,19 +107,12 @@ public class AutonomousMode extends LinearOpMode {
 
         waitForStart();
 
-        Pose2D target1 = new Pose2D(DistanceUnit.MM, -1000, 0, AngleUnit.DEGREES, 0);
-
-        while (opModeIsActive() && !isAtTarget(50, 50, Math.toRadians(5))) {
-            driveToTarget(target1, 0.6);
+        if (opModeIsActive()) {
+            telemetry.addData("Status", "Running");
             telemetry.update();
+
+            driveToTarget(targetPose, 1);
         }
-
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
-
-        sleep(1000);
 
     }
     public boolean isAtTarget(double posTolerance, double velTolerance, double angleTolerance) {
