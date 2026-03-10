@@ -5,6 +5,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -40,6 +41,7 @@ public class OdoOp extends LinearOpMode {
     DcMotor frontRight;
     DcMotor backLeft;
     DcMotor backRight;
+    Led led;
     Pose2D targetPose = new Pose2D(DistanceUnit.MM, 0, 0, AngleUnit.DEGREES, 0);
     double xStartingPosition = -1828.8;
     double yStartingPosition = 0.0;
@@ -70,6 +72,9 @@ public class OdoOp extends LinearOpMode {
         shooterMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooterMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterMotor1.setDirection(DcMotor.Direction.REVERSE);
+
+        Servo LedServo = hardwareMap.servo.get("led");
+        led = new Led(LedServo);
 
         shooter = new Shooter(shooterMotor1, shooterMotor2);
 
@@ -144,10 +149,18 @@ public class OdoOp extends LinearOpMode {
                 }
                 double m1 = shooterMotor1.getVelocity();
                 double m2 = shooterMotor2.getVelocity();
+
+                // why does telemetry have two methods: addline and adddata??? stupid nerds
                 telemetry.addData("Shooter 1 speed: ", m1);
                 telemetry.addData("Shooter 2 speed: ", m2);
-                telemetry.update();
 
+                if (m1 > 1200 && m2 > 1200) {
+                    led.setColor(0.5);
+                    telemetry.addLine("Shooters ready");
+                } else {
+                    led.setColor(1);
+                }
+                telemetry.update();
                 if (gamepad2.dpad_up) {
                     intakeThing.setSpeed(-0.75);
                 } else if (gamepad2.dpad_down) {
