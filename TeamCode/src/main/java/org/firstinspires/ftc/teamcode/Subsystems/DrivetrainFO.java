@@ -158,7 +158,6 @@ public class DrivetrainFO {
         setAllPosition(speed, positionRight*cm_entier, positionLeft*cm_entier);
     }
 
-
     public boolean motorIsBusy(){
 
         if (frontLeft.isBusy()|| frontRight.isBusy() || rearLeft.isBusy() || rearRight.isBusy()){
