@@ -161,8 +161,6 @@ public class OdoOp extends LinearOpMode {
                     led.setColor(1);
                 }
 
-                // test
-
                 telemetry.update();
                 if (gamepad2.dpad_up) {
                     intakeThing.setSpeed(-0.75);
