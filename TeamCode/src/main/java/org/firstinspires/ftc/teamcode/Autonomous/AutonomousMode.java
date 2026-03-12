@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -111,17 +112,132 @@ public class AutonomousMode extends LinearOpMode {
             telemetry.addData("Status", "Running");
             telemetry.update();
 
-            driveToTarget(targetPose, 1);
+            // align to balls
+            Pose2D ballPos = new Pose2D(DistanceUnit.MM, -900, 300, AngleUnit.DEGREES, 0); // replace with correct values
+
+            telemetry.addData("Status", "Driving to balls");
+            telemetry.update();
+
+            while (!isAtTargetSimple(ballPos)) {
+                driveToTarget(ballPos, 0.5);
+            }
+
+            // intake balls
+            intake.setSpeed(1);
+
+            ElapsedTime timer = new ElapsedTime();
+            timer.reset();
+
+            while (timer.seconds() < 2) {
+                drivetrain.mecanumDrive(0, 0.5, 0);
+                telemetry.addData("Status", "Driving forward and intaking");
+                telemetry.update();
+            }
+
+            drivetrain.mecanumDrive(0,0,0);
+            intake.setSpeed(0);
+
+            // align for shooting
+            Pose2D shootPos = new Pose2D(DistanceUnit.MM, 0, 0, AngleUnit.DEGREES, 0); // replace with correct values
+
+            telemetry.addData("Status", "Driving to shooting position");
+            telemetry.update();
+
+            while (!isAtTargetSimple(shootPos)) {
+                driveToTarget(shootPos, 0.5);
+            }
+            if (isAtTargetSimple(shootPos)) {
+                shooter.setVelocity(1250);
+                intakeThing.setSpeed(1);
+                telemetry.addData("Status", "Shooting");
+                telemetry.update();
+                sleep(3000);
+                intakeThing.setSpeed(0);
+                shooter.setSpeed(0);
+            }
+
+            // get balls again
+            telemetry.addData("Status", "Driving to balls (2)");
+            telemetry.update();
+
+            while (!isAtTargetSimple(ballPos)) {
+                driveToTarget(ballPos, 0.5);
+            }
+
+            // intake balls
+            intake.setSpeed(1);
+
+            ElapsedTime timer2 = new ElapsedTime();
+            timer2.reset();
+
+            while (timer2.seconds() < 2) {
+                drivetrain.mecanumDrive(0, 0.5, 0);
+                telemetry.addData("Status", "Driving forward and intaking (2)");
+                telemetry.update();
+            }
+
+            drivetrain.mecanumDrive(0,0,0);
+            intake.setSpeed(0);
+
+            // align for shooting
+            telemetry.addData("Status", "Driving to shooting position (2) ");
+            telemetry.update();
+
+            while (!isAtTargetSimple(shootPos)) {
+                driveToTarget(shootPos, 0.5);
+            }
+            if (isAtTargetSimple(shootPos)) {
+                shooter.setVelocity(1250);
+                intakeThing.setSpeed(1);
+                telemetry.addData("Status", "Shooting");
+                telemetry.update();
+                sleep(3000);
+                intakeThing.setSpeed(0);
+                shooter.setSpeed(0);
+            }
+
+            // open gate
+            Pose2D gatePos = new Pose2D(DistanceUnit.MM, 0, 0, AngleUnit.DEGREES, 0); // replace with correct values
+            telemetry.addData("Status", "Driving to gate");
+            telemetry.update();
+            while (!isAtTargetSimple(gatePos)) {
+                driveToTarget(gatePos, 0.5);
+            }
+
+            if (isAtTargetSimple(gatePos)) {
+                // go forward into the lever to open the gate
+                drivetrain.mecanumDrive(0, 0.5, 0);
+                telemetry.addData("Status", "Opening gate");
+                telemetry.update();
+                sleep(2000);
+            }
+
+            // drive backwards to clear gate
+
+            ElapsedTime timer3 = new ElapsedTime();
+            timer3.reset();
+
+            while (timer3.seconds() < 0.25) {
+                drivetrain.mecanumDrive(0, -0.2, 0);
+                telemetry.addData("Status", "Driving backward");
+                telemetry.update();
+            }
+
+            drivetrain.mecanumDrive(0,0,0);
         }
 
     }
-    public boolean isAtTarget(double posTolerance, double velTolerance, double angleTolerance) {
+    public boolean isAtTarget(Pose2D target, double posTolerance, double velTolerance, double angleTolerance) {
         odo.update();
-        return Math.abs(odo.getPosX(DistanceUnit.MM) - targetPose.getX(DistanceUnit.MM)) < posTolerance &&
-                Math.abs(odo.getPosY(DistanceUnit.MM) - targetPose.getY(DistanceUnit.MM)) < posTolerance &&
-                Math.abs(odo.getPosition().getHeading(AngleUnit.RADIANS) - targetPose.getHeading(AngleUnit.RADIANS)) < angleTolerance &&
+        return Math.abs(odo.getPosX(DistanceUnit.MM) - target.getX(DistanceUnit.MM)) < posTolerance &&
+                Math.abs(odo.getPosY(DistanceUnit.MM) - target.getY(DistanceUnit.MM)) < posTolerance &&
+                Math.abs(odo.getPosition().getHeading(AngleUnit.RADIANS) - target.getHeading(AngleUnit.RADIANS)) < angleTolerance &&
                 Math.abs(odo.getVelX(DistanceUnit.MM)) < velTolerance &&
                 Math.abs(odo.getVelY(DistanceUnit.MM)) < velTolerance;
+    }
+
+    public boolean isAtTargetSimple(Pose2D target) {
+        return isAtTarget(target, 15, 10, Math.toRadians(3));
     }
 
     public void driveToTarget(Pose2D targetPose, double speed) {

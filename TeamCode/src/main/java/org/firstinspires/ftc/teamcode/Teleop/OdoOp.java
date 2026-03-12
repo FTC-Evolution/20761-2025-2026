@@ -43,7 +43,7 @@ public class OdoOp extends LinearOpMode {
     DcMotor backRight;
     Led led;
     Pose2D targetPose = new Pose2D(DistanceUnit.MM, 0, 0, AngleUnit.DEGREES, 0);
-    double xStartingPosition = -1828.8;
+    double xStartingPosition = 0.0;
     double yStartingPosition = 0.0;
     double headingStartingPosition = 0.0;
     @Override
