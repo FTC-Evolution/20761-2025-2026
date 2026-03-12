@@ -146,13 +146,45 @@ public class AutonomousMode extends LinearOpMode {
             while (!isAtTargetSimple(shootPos)) {
                 driveToTarget(shootPos, 0.5);
             }
+
+            // shoot balls
             if (isAtTargetSimple(shootPos)) {
                 shooter.setVelocity(1250);
-                intakeThing.setSpeed(1);
-                telemetry.addData("Status", "Shooting");
-                telemetry.update();
-                sleep(3000);
-                intakeThing.setSpeed(0);
+
+                for (int shot = 1; shot <= 3; shot++) {
+                    ElapsedTime spinUpTimer = new ElapsedTime();
+                    spinUpTimer.reset();
+                    boolean shooterReady = false;
+
+                    while (opModeIsActive() && spinUpTimer.seconds() < 5.0) {
+                        double m1 = shooterMotor1.getVelocity();
+                        double m2 = shooterMotor2.getVelocity();
+                        telemetry.addData("Shot", "%d/3", shot);
+                        telemetry.addData("Shooter Velocity", "Motor 1: %.2f, Motor 2: %.2f", m1, m2);
+                        telemetry.addData("Status", "Spinning up shooter");
+                        telemetry.update();
+
+                        if (m1 > 1200 && m2 > 1200) {
+                            shooterReady = true;
+                            break;
+                        }
+                    }
+
+                    if (shooterReady) {
+                        telemetry.addData("Status", "Shooter ready, firing shot " + shot);
+                    } else {
+                        telemetry.addData("Status", "Shooter not up to speed, firing anyway");
+                    }
+                    telemetry.update();
+
+                    intakeThing.setSpeed(1);
+                    sleep(750); // adjust this, this is how much time is needed to feed one ball
+                    intakeThing.setSpeed(0);
+
+                    telemetry.addData("Status", "Shot " + shot + " fired");
+                    telemetry.update();
+                }
+
                 shooter.setSpeed(0);
             }
 
@@ -186,13 +218,44 @@ public class AutonomousMode extends LinearOpMode {
             while (!isAtTargetSimple(shootPos)) {
                 driveToTarget(shootPos, 0.5);
             }
+
             if (isAtTargetSimple(shootPos)) {
                 shooter.setVelocity(1250);
-                intakeThing.setSpeed(1);
-                telemetry.addData("Status", "Shooting");
-                telemetry.update();
-                sleep(3000);
-                intakeThing.setSpeed(0);
+
+                for (int shot = 1; shot <= 3; shot++) {
+                    ElapsedTime spinUpTimer = new ElapsedTime();
+                    spinUpTimer.reset();
+                    boolean shooterReady = false;
+
+                    while (opModeIsActive() && spinUpTimer.seconds() < 5.0) {
+                        double m1 = shooterMotor1.getVelocity();
+                        double m2 = shooterMotor2.getVelocity();
+                        telemetry.addData("Shot", "%d/3", shot);
+                        telemetry.addData("Shooter Velocity", "Motor 1: %.2f, Motor 2: %.2f", m1, m2);
+                        telemetry.addData("Status", "Spinning up shooter");
+                        telemetry.update();
+
+                        if (m1 > 1200 && m2 > 1200) {
+                            shooterReady = true;
+                            break;
+                        }
+                    }
+
+                    if (shooterReady) {
+                        telemetry.addData("Status", "Shooter ready, firing shot " + shot);
+                    } else {
+                        telemetry.addData("Status", "Shooter not up to speed, firing anyway");
+                    }
+                    telemetry.update();
+
+                    intakeThing.setSpeed(1);
+                    sleep(750); // adjust this, this is how much time is needed to feed one ball
+                    intakeThing.setSpeed(0);
+
+                    telemetry.addData("Status", "Shot " + shot + " fired");
+                    telemetry.update();
+                }
+
                 shooter.setSpeed(0);
             }
 
