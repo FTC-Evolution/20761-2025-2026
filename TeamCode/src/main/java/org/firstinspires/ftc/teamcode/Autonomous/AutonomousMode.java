@@ -112,7 +112,7 @@ public class AutonomousMode extends LinearOpMode {
             telemetry.addData("Status", "Running");
             telemetry.update();
 
-            Pose2D shootPos2 = new Pose2D(DistanceUnit.MM, 865.2, 326.6, AngleUnit.DEGREES, 133.2a); // replace with correct values
+            Pose2D shootPos2 = new Pose2D(DistanceUnit.MM, 865.2, 326.6, AngleUnit.DEGREES, 133.2); // replace with correct values
 
             telemetry.addData("Status", "Driving to shooting position");
             telemetry.update();
