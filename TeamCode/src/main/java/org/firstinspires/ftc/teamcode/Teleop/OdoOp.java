@@ -159,14 +159,21 @@ public class OdoOp extends LinearOpMode {
                 } else {
                     intake.setSpeed(0);
                 }
-
+                double targetVelocity = 0;
                 if (gamepad2.right_trigger > 0.1) {
-                    shooter.setVelocity(1250);
+                    targetVelocity = 1250;
                 } else if (gamepad2.left_trigger > 0.1) {
-                    shooter.setVelocity(-1250);
+                    targetVelocity = 1100;
+                } else if (gamepad2.right_bumper) {
+                    targetVelocity = 1000;
+                } else if (gamepad2.left_bumper) {
+                    targetVelocity = -800;
                 } else {
-                    shooter.setVelocity(0);
+                    targetVelocity = 0;
                 }
+
+                shooter.setVelocity(targetVelocity);
+
                 double m1 = shooterMotor1.getVelocity();
                 double m2 = shooterMotor2.getVelocity();
 
@@ -174,7 +181,7 @@ public class OdoOp extends LinearOpMode {
                 telemetry.addData("Shooter 1 speed: ", m1);
                 telemetry.addData("Shooter 2 speed: ", m2);
 
-                if (m1 > 1200 && m2 > 1200) {
+                if (targetVelocity > 0 && m1 >= targetVelocity && m2 >= targetVelocity) {
                     led.setColor(0.5);
                     telemetry.addLine("Shooters ready");
                 } else {

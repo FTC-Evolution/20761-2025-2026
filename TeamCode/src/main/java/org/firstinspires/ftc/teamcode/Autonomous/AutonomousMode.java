@@ -43,7 +43,7 @@ public class AutonomousMode extends LinearOpMode {
     DcMotor backRight;
     Led led;
     Pose2D targetPose = new Pose2D(DistanceUnit.MM, 0, 0, AngleUnit.DEGREES, 0);
-    double xStartingPosition = -1828.8;
+    double xStartingPosition = -0.0;
     double yStartingPosition = 0.0;
     double headingStartingPosition = 0.0;
     @Override
@@ -111,6 +111,56 @@ public class AutonomousMode extends LinearOpMode {
         if (opModeIsActive()) {
             telemetry.addData("Status", "Running");
             telemetry.update();
+
+            Pose2D shootPos2 = new Pose2D(DistanceUnit.MM, 865.2, 326.6, AngleUnit.DEGREES, 133.2a); // replace with correct values
+
+            telemetry.addData("Status", "Driving to shooting position");
+            telemetry.update();
+
+            while (!isAtTargetSimple(shootPos2)) {
+                driveToTarget(shootPos2, 0.5);
+            }
+
+            // shoot balls
+            if (isAtTargetSimple(shootPos2)) {
+                shooter.setVelocity(1250);
+
+                for (int shot = 1; shot <= 3; shot++) {
+                    ElapsedTime spinUpTimer1 = new ElapsedTime();
+                    spinUpTimer1.reset();
+                    boolean shooterReady = false;
+
+                    while (opModeIsActive() && spinUpTimer1.seconds() < 5.0) {
+                        double m1 = shooterMotor1.getVelocity();
+                        double m2 = shooterMotor2.getVelocity();
+                        telemetry.addData("Shot", "%d/3", shot);
+                        telemetry.addData("Shooter Velocity", "Motor 1: %.2f, Motor 2: %.2f", m1, m2);
+                        telemetry.addData("Status", "Spinning up shooter");
+                        telemetry.update();
+
+                        if (m1 >= 1100 && m2 >= 1100) {
+                            shooterReady = true;
+                            break;
+                        }
+                    }
+
+                    if (shooterReady) {
+                        telemetry.addData("Status", "Shooter ready, firing shot " + shot);
+                    } else {
+                        telemetry.addData("Status", "Shooter not up to speed, firing anyway");
+                    }
+                    telemetry.update();
+
+                    intakeThing.setSpeed(1);
+                    sleep(750); // adjust this, this is how much time is needed to feed one ball
+                    intakeThing.setSpeed(0);
+
+                    telemetry.addData("Status", "Shot " + shot + " fired");
+                    telemetry.update();
+                }
+
+                shooter.setSpeed(0);
+            }
 
             // align to balls
             Pose2D ballPos = new Pose2D(DistanceUnit.MM, -900, 300, AngleUnit.DEGREES, 0); // replace with correct values
