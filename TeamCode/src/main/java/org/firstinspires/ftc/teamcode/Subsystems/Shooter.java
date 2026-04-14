@@ -18,6 +18,4 @@ public class Shooter {
         shooterMotor1.setVelocity(velocity);
         shooterMotor2.setVelocity(velocity);
     }
-
-
 }
