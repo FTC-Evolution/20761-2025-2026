@@ -99,7 +99,7 @@ public class OdoOp extends LinearOpMode {
         intakeThing = new IntakeThing(intakeThingMotor);
 
         odo = this.hardwareMap.get(GoBildaPinpointDriver.class, "odo");
-        odo.setOffsets(0, 0, DistanceUnit.MM);
+        odo.setOffsets(0, 0, DistanceUnit.MM); // TODO: set the right ones
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         odo.resetPosAndIMU();
@@ -136,6 +136,8 @@ public class OdoOp extends LinearOpMode {
             while (opModeIsActive()) {
                 odo.update();
                 telemetryAprilTag();
+                
+
 
                 double y = -this.gamepad1.left_stick_y;
                 double x = this.gamepad1.left_stick_x;
@@ -221,10 +223,12 @@ public class OdoOp extends LinearOpMode {
                 //    climber.setSpeed(0);
                 //}
 
-                if (gamepad1.a) {
+                if (gamepad1.b) {
+                    alignToTag();
+                } else if (gamepad1.a) {
                     driveToTarget(targetPose, 0.5);
                 } else {
-                    drivetrain.mecanumDrive(rotx,roty,r);
+                    drivetrain.mecanumDrive(rotx, roty, r);
                 }
 
                 telemetry.update();
@@ -300,7 +304,7 @@ public class OdoOp extends LinearOpMode {
         //builder.enableLiveView(true);
 
         // Set the stream format; MJPEG uses less bandwidth than default YUY2.
-        //builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
+        builder.setStreamFormat(VisionPortal.StreamFormat.MJPEG);
 
         // Choose whether or not LiveView stops if no processors are enabled.
         // If set "true", monitor shows solid orange screen if no processors enabled.
@@ -329,6 +333,14 @@ public class OdoOp extends LinearOpMode {
                 telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
                 telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
                 telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+                telemetry.addData("Bearing", detection.ftcPose.bearing);
+                if (detection.ftcPose.bearing < 3 && detection.ftcPose.bearing > -3) {
+                    telemetry.addLine("Tag is centered");
+                } else if (detection.ftcPose.bearing >= 3) {
+                    telemetry.addLine("Tag is to the left");
+                } else {
+                    telemetry.addLine("Tag is to the right");
+                }
             } else {
                 telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
                 telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
@@ -340,6 +352,30 @@ public class OdoOp extends LinearOpMode {
         telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
         telemetry.addLine("RBE = Range, Bearing & Elevation");
 
+    }
+
+    private void alignToTag() {
+        List<AprilTagDetection> detections = aprilTag.getDetections();
+        if (detections.isEmpty()) {
+            drivetrain.mecanumDrive(0, 0, 0);
+            return;
+        }
+
+        AprilTagDetection tag = detections.get(0);
+
+        double bearingError = tag.ftcPose.bearing; // degrees, positive = tag is to the left
+        double yawError     = tag.ftcPose.yaw;     // degrees, positive = robot is turned right
+
+        double strafe  = bearingError * 0.02;  // tune this gain
+        double rotate  = yawError    * 0.02;  // tune this gain
+
+        strafe = Range.clip(strafe, -0.4, 0.4);
+        rotate = Range.clip(rotate, -0.4, 0.4);
+
+        drivetrain.mecanumDrive(strafe, 0, rotate);
+
+        telemetry.addData("Bearing error", bearingError);
+        telemetry.addData("Yaw error", yawError);
     }
 
 }
