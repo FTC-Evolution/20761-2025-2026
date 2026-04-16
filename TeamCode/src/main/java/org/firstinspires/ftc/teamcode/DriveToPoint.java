@@ -149,7 +149,7 @@ public class DriveToPoint {
             double xOutput = (xPWR * cosine) + (yPWR * sine);
             double yOutput = (xPWR * sine) - (yPWR * cosine);
 
-            calculateMecanumOutput(xOutput * power, yOutput * power, hOutput * power);
+            calculateMecanumOutput(yOutput * power, xOutput * power, hOutput * power);
         }
 
         if (inBounds(currentPosition, targetPosition) == InBounds.IN_BOUNDS) {
@@ -163,10 +163,10 @@ public class DriveToPoint {
     }
 
     private void calculateMecanumOutput(double forward, double strafe, double yaw) {
-        double leftFront = forward - -strafe - yaw;
-        double rightFront = forward + -strafe + yaw;
-        double leftBack = forward + -strafe - yaw;
-        double rightBack = forward - -strafe + yaw;
+        double leftFront  = forward + strafe - yaw;
+        double rightFront = forward - strafe + yaw;
+        double leftBack   = forward - strafe - yaw;
+        double rightBack  = forward + strafe + yaw;
 
         double max = Math.max(Math.abs(leftFront), Math.abs(rightFront));
         max = Math.max(max, Math.abs(leftBack));
