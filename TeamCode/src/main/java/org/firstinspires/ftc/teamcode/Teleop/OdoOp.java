@@ -56,6 +56,7 @@ public class OdoOp extends LinearOpMode {
     double xStartingPosition = 0.0;
     double yStartingPosition = 0.0;
     double headingStartingPosition = 0.0;
+
     @Override
     public void runOpMode() {
         imu = hardwareMap.get(IMU.class, "imu");
@@ -99,13 +100,12 @@ public class OdoOp extends LinearOpMode {
         intakeThing = new IntakeThing(intakeThingMotor);
 
         odo = this.hardwareMap.get(GoBildaPinpointDriver.class, "odo");
-        odo.setOffsets(3.125, 5.5, DistanceUnit.INCH);
+        odo.setOffsets(3.5, 17, DistanceUnit.CM);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         odo.resetPosAndIMU();
         initAprilTag();
-        // Wait for the Pinpoint IMU to finish calibrating (critical!)
-        // If you don't wait, the heading will be garbage and drive will go random directions
+        // wait for calibration
         try {
             Thread.sleep(300);
         } catch (InterruptedException e) {
@@ -116,13 +116,13 @@ public class OdoOp extends LinearOpMode {
         nav.setDriveType(DriveToPoint.DriveType.MECANUM);
 
 
-       drivetrain = new DrivetrainFO(
-               frontLeft,
-               frontRight,
-               backLeft,
-               backRight,
-               imu
-       );
+        drivetrain = new DrivetrainFO(
+                frontLeft,
+                frontRight,
+                backLeft,
+                backRight,
+                imu
+        );
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -132,11 +132,10 @@ public class OdoOp extends LinearOpMode {
         telemetry.addData("Status", "Running");
         telemetry.update();
 
-        if(opModeIsActive()) {
+        if (opModeIsActive()) {
             while (opModeIsActive()) {
                 odo.update();
                 telemetryAprilTag();
-                
 
 
                 double y = -this.gamepad1.left_stick_y;
@@ -149,8 +148,8 @@ public class OdoOp extends LinearOpMode {
                 rotx = rotx * 1.1;
                 Pose2D currentPos = odo.getPosition();
                 String posData = String.format(Locale.US, "Pos X: %.1f, Pos Y: %.1f, Heading (deg): %.1f°",
-                        currentPos.getX(DistanceUnit.MM),
-                        currentPos.getY(DistanceUnit.MM),
+                        currentPos.getX(DistanceUnit.INCH),
+                        currentPos.getY(DistanceUnit.INCH),
                         currentPos.getHeading(AngleUnit.DEGREES));
                 telemetry.addData("Odo Position", posData);
                 telemetry.addData("Odo Status", odo.getDeviceStatus());
@@ -160,7 +159,11 @@ public class OdoOp extends LinearOpMode {
 
                 if (gamepad1.options) {
                     imu.resetYaw();
-                    odo.resetPosAndIMU();
+                    Pose2D cur = odo.getPosition();
+                    odo.setPosition(new Pose2D(DistanceUnit.MM,
+                            cur.getX(DistanceUnit.MM),
+                            cur.getY(DistanceUnit.MM),
+                            AngleUnit.DEGREES, 0));
                 }
 
                 if (gamepad1.left_bumper) {
@@ -184,7 +187,7 @@ public class OdoOp extends LinearOpMode {
                 } else if (gamepad2.right_bumper) {
                     targetVelocity = 1000;
                 } else if (gamepad2.left_bumper) {
-                    targetVelocity = -800;
+                    targetVelocity = 800;
                 } else {
                     targetVelocity = 0;
                 }
@@ -203,7 +206,6 @@ public class OdoOp extends LinearOpMode {
                     led.setColor(1);
                 }
 
-                telemetry.update();
                 if (gamepad2.dpad_up) {
                     intakeThing.setSpeed(-0.75);
                 } else if (gamepad2.dpad_down) {
@@ -234,7 +236,7 @@ public class OdoOp extends LinearOpMode {
                 telemetry.update();
             }
         }
-
+        visionPortal.close();
     }
 //    public boolean isAtTarget(double posTolerance, double velTolerance, double angleTolerance) {
 //        odo.update();
@@ -246,7 +248,6 @@ public class OdoOp extends LinearOpMode {
 //    }
 
     public void driveToTarget(Pose2D targetPose, double speed) {
-        odo.update();
         this.targetPose = targetPose;
         nav.driveTo(odo.getPosition(), targetPose, speed, 0);
         frontLeft.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.LEFT_FRONT));
@@ -257,6 +258,7 @@ public class OdoOp extends LinearOpMode {
         String data2 = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", targetPose.getX(DistanceUnit.INCH), targetPose.getY(DistanceUnit.INCH), targetPose.getHeading(AngleUnit.RADIANS));
         telemetry.addData("TARGET Position", data2);
     }
+
     private void initAprilTag() {
 
         // Create the AprilTag processor.
@@ -321,6 +323,7 @@ public class OdoOp extends LinearOpMode {
         //visionPortal.setProcessorEnabled(aprilTag, true);
 
     }
+
     private void telemetryAprilTag() {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -364,10 +367,10 @@ public class OdoOp extends LinearOpMode {
         AprilTagDetection tag = detections.get(0);
 
         double bearingError = tag.ftcPose.bearing; // degrees, positive = tag is to the left
-        double yawError     = tag.ftcPose.yaw;     // degrees, positive = robot is turned right
+        double yawError = tag.ftcPose.yaw;     // degrees, positive = robot is turned right
 
-        double strafe  = bearingError * 0.02;  // tune this gain
-        double rotate  = yawError    * 0.02;  // tune this gain
+        double strafe = bearingError * 0.02;  // tune this gain
+        double rotate = -yawError * 0.02;  // tune this gain
 
         strafe = Range.clip(strafe, -0.4, 0.4);
         rotate = Range.clip(rotate, -0.4, 0.4);
