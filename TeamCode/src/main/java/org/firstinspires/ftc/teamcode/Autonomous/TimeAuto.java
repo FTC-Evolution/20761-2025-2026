@@ -112,16 +112,54 @@ public class TimeAuto extends LinearOpMode {
             telemetry.addData("Status", "Running");
             telemetry.update();
 
-            ElapsedTime driveTime1 = new ElapsedTime();
-            driveTime1.reset();
+            double rotate45Seconds = 0.6;
+            ElapsedTime rotate45Time = new ElapsedTime();
+            rotate45Time.reset();
+            while (opModeIsActive() && rotate45Time.seconds() < rotate45Seconds) {
+                drivetrain.mecanumDrive(0, 0, -0.5);
+                telemetry.addData("Status", "Rotating left 45");
+                telemetry.update();
+            }
+            drivetrain.mecanumDrive(0, 0, 0);
 
-            while (opModeIsActive() && driveTime1.seconds() < 5.0) {
+            ElapsedTime driveTime = new ElapsedTime();
+            driveTime.reset();
+            while (opModeIsActive() && driveTime.seconds() < 1.5) {
                 drivetrain.mecanumDrive(0, 0.5, 0);
                 telemetry.addData("Status", "Driving forward");
                 telemetry.update();
             }
+            drivetrain.mecanumDrive(0, 0, 0);
 
-            drivetrain.mecanumDrive(0,0,0);
+            double rotate180Seconds = 2.4;
+            ElapsedTime rotate180Time = new ElapsedTime();
+            rotate180Time.reset();
+            while (opModeIsActive() && rotate180Time.seconds() < rotate180Seconds) {
+                drivetrain.mecanumDrive(0, 0, 0.5);
+                telemetry.addData("Status", "Rotating 180");
+                telemetry.update();
+            }
+            drivetrain.mecanumDrive(0, 0, 0);
+
+            shooter.setVelocity(1250);
+            ElapsedTime spinupTime = new ElapsedTime();
+            spinupTime.reset();
+            while (opModeIsActive() && spinupTime.seconds() < 3.0) {
+                telemetry.addData("Status", "Spinning up shooters");
+                telemetry.addData("Shooter 1 vel", shooterMotor1.getVelocity());
+                telemetry.addData("Shooter 2 vel", shooterMotor2.getVelocity());
+                telemetry.update();
+            }
+
+            ElapsedTime feedTime = new ElapsedTime();
+            feedTime.reset();
+            while (opModeIsActive() && feedTime.seconds() < 4.0) {
+                intakeThing.setSpeed(-0.75);
+                telemetry.addData("Status", "Feeding balls");
+                telemetry.update();
+            }
+            intakeThing.setSpeed(0);
+            shooter.setVelocity(0);
         }
 
     }
